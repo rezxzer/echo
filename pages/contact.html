@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>კონტაქტი - Echo</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header class="bg-light shadow-sm">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">
+                    <i class="fas fa-home"></i> Echo
+                </a>
+                <div class="echo-brand">echo</div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="../index.html">
+                                <i class="fas fa-home"></i> მთავარი
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="about.html">
+                                <i class="fas fa-info-circle"></i> ჩვენს შესახებ
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="contact.html">
+                                <i class="fas fa-envelope"></i> კონტაქტი
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="hero-title">დაგვიკავშირდით</h1>
+                    <p class="hero-subtitle">მოგვწერეთ, დაგვირეკეთ ან მოინახულეთ ჩვენი ოფისი</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="contact-section py-5">
+            <div class="container">
+                <div class="row">
+                    <!-- Contact Form -->
+                    <div class="col-lg-8">
+                        <div class="contact-form bg-white p-4 rounded shadow-sm">
+                            <h2 class="section-title mb-4">მოგვწერეთ</h2>
+                            <form id="contactForm" class="needs-validation" novalidate>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="name" class="form-label">სახელი</label>
+                                        <input type="text" class="form-control" id="name" required>
+                                        <div class="invalid-feedback">
+                                            გთხოვთ შეიყვანოთ თქვენი სახელი
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="email" class="form-label">ელ-ფოსტა</label>
+                                        <input type="email" class="form-control" id="email" required>
+                                        <div class="invalid-feedback">
+                                            გთხოვთ შეიყვანოთ სწორი ელ-ფოსტის მისამართი
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="subject" class="form-label">თემა</label>
+                                    <input type="text" class="form-control" id="subject" required>
+                                    <div class="invalid-feedback">
+                                        გთხოვთ მიუთითოთ თემა
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="message" class="form-label">შეტყობინება</label>
+                                    <textarea class="form-control" id="message" rows="5" required></textarea>
+                                    <div class="invalid-feedback">
+                                        გთხოვთ შეიყვანოთ თქვენი შეტყობინება
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    გაგზავნა
+                                    <i class="fas fa-paper-plane ms-2"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="col-lg-4">
+                        <div class="contact-info bg-white p-4 rounded shadow-sm">
+                            <h2 class="section-title mb-4">კონტაქტის ინფორმაცია</h2>
+                            
+                            <!-- Location -->
+                            <div class="contact-item mb-4">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                    <h3 class="h5 mb-0">მისამართი</h3>
+                                </div>
+                                <p class="ms-4">პეკინი, ჩინეთი</p>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="contact-item mb-4">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-envelope text-primary me-2"></i>
+                                    <h3 class="h5 mb-0">ელ-ფოსტა</h3>
+                                </div>
+                                <p class="ms-4">info@echo.com</p>
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="contact-item mb-4">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-phone text-primary me-2"></i>
+                                    <h3 class="h5 mb-0">ტელეფონი</h3>
+                                </div>
+                                <p class="ms-4">+86 10 1234 5678</p>
+                            </div>
+
+                            <!-- Social Media -->
+                            <div class="contact-item">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-share-alt text-primary me-2"></i>
+                                    <h3 class="h5 mb-0">სოციალური ქსელები</h3>
+                                </div>
+                                <div class="social-links ms-4">
+                                    <a href="#" class="btn btn-outline-primary me-2">
+                                        <i class="fab fa-facebook-f"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-outline-info me-2">
+                                        <i class="fab fa-twitter"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-outline-danger me-2">
+                                        <i class="fab fa-instagram"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-outline-primary">
+                                        <i class="fab fa-linkedin-in"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Map Section -->
+        <section class="map-section py-5 bg-light">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="map-container rounded shadow-sm">
+                            <iframe 
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.215256012539!2d116.40752631541484!3d39.90419997932567!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x35f1ac5bdb2d3c1f%3A0x6c8e3e3b3b3b3b3b!2sBeijing%2C%20China!5e0!3m2!1sen!2sus!4v1647881234567!5m2!1sen!2sus" 
+                                width="100%" 
+                                height="450" 
+                                style="border:0;" 
+                                allowfullscreen="" 
+                                loading="lazy">
+                            </iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2024 ყველა უფლება დაცულია</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Form validation
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
+</body>
+</html> 

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>პროფილი - Echo</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/profile.css">
+</head>
+<body>
+    <header class="bg-light shadow-sm">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container">
+                <a class="navbar-brand" href="../index.html">
+                    <i class="fas fa-home"></i> მთავარი
+                </a>
+                <div class="echo-brand">echo</div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="../index.html">
+                                <i class="fas fa-home"></i> მთავარი
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="about.html">
+                                <i class="fas fa-info-circle"></i> ჩვენს შესახებ
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="contact.html">
+                                <i class="fas fa-envelope"></i> კონტაქტი
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="faq.html">
+                                <i class="fas fa-question-circle"></i> FAQ
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="products.html">
+                                <i class="fas fa-star"></i> პროდუქტები
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="auth-buttons">
+                        <button onclick="logout()" class="btn btn-primary">
+                            <i class="fas fa-sign-out-alt"></i> გასვლა
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container py-5">
+        <div class="row">
+            <!-- Profile Header -->
+            <div class="col-12 mb-4">
+                <div class="profile-header">
+                    <div class="profile-cover">
+                        <img src="https://via.placeholder.com/1200x400" alt="Cover Photo" class="cover-photo">
+                        <button class="btn btn-light edit-cover">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                    </div>
+                    <div class="profile-info">
+                        <div class="profile-avatar">
+                            <img src="https://via.placeholder.com/150" alt="Profile Picture" class="avatar">
+                            <button class="btn btn-light edit-avatar">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                        <div class="profile-details">
+                            <h1 class="profile-name">ტესტ მომხმარებელი</h1>
+                            <p class="profile-bio">ეს არის სატესტო მომხმარებელი</p>
+                            <div class="profile-stats">
+                                <div class="stat">
+                                    <i class="fas fa-users"></i>
+                                    <span>100 მიმდევარი</span>
+                                </div>
+                                <div class="stat">
+                                    <i class="fas fa-user-friends"></i>
+                                    <span>50 გამომწერი</span>
+                                </div>
+                                <div class="stat">
+                                    <i class="fas fa-crown"></i>
+                                    <span>პრემიუმი</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Content -->
+            <div class="col-lg-8">
+                <!-- Post Form -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form class="post-form">
+                            <div class="mb-3">
+                                <textarea class="form-control" rows="3" placeholder="რას ფიქრობთ?"></textarea>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="post-actions">
+                                    <button type="button" class="btn btn-light">
+                                        <i class="fas fa-image"></i> ფოტო
+                                    </button>
+                                    <button type="button" class="btn btn-light">
+                                        <i class="fas fa-video"></i> ვიდეო
+                                    </button>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane"></i> გამოქვეყნება
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Posts -->
+                <div class="posts-list">
+                    <!-- Post 1 -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="https://via.placeholder.com/50" alt="User" class="rounded-circle me-2" width="40">
+                                <div>
+                                    <h6 class="mb-0">ტესტ მომხმარებელი</h6>
+                                    <small class="text-muted">2 საათის წინ</small>
+                                </div>
+                            </div>
+                            <p class="card-text">ეს არის სატესტო პოსტი #1</p>
+                            <img src="https://via.placeholder.com/600x400" alt="Post Image" class="img-fluid rounded mb-3">
+                            <div class="post-actions">
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-heart"></i> 15
+                                </button>
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-comment"></i> 5
+                                </button>
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-share"></i> გაზიარება
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Post 2 -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="https://via.placeholder.com/50" alt="User" class="rounded-circle me-2" width="40">
+                                <div>
+                                    <h6 class="mb-0">ტესტ მომხმარებელი</h6>
+                                    <small class="text-muted">5 საათის წინ</small>
+                                </div>
+                            </div>
+                            <p class="card-text">ეს არის სატესტო პოსტი #2</p>
+                            <div class="ratio ratio-16x9 mb-3">
+                                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
+                            </div>
+                            <div class="post-actions">
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-heart"></i> 25
+                                </button>
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-comment"></i> 8
+                                </button>
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-share"></i> გაზიარება
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Sidebar -->
+            <div class="col-lg-4">
+                <!-- About -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">შესახებ</h5>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-envelope me-2"></i>
+                                <span>test@example.com</span>
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-calendar me-2"></i>
+                                <span>შეუერთდა: 20 მარტი, 2024</span>
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                <span>თბილისი, საქართველო</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">სტატისტიკა</h5>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value">2</div>
+                                <div class="stat-label">პოსტი</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">1</div>
+                                <div class="stat-label">ვიდეო</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">2</div>
+                                <div class="stat-label">ფოტო</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">100</div>
+                                <div class="stat-label">მიმდევარი</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Photos -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">ფოტოები</h5>
+                        <div class="photo-grid">
+                            <div class="photo-card">
+                                <img src="https://via.placeholder.com/400x400" alt="Photo">
+                                <div class="photo-overlay">
+                                    <div class="photo-actions">
+                                        <button class="btn btn-sm">
+                                            <i class="fas fa-heart"></i>
+                                        </button>
+                                        <button class="btn btn-sm">
+                                            <i class="fas fa-comment"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="photo-card">
+                                <img src="https://via.placeholder.com/400x400" alt="Photo">
+                                <div class="photo-overlay">
+                                    <div class="photo-actions">
+                                        <button class="btn btn-sm">
+                                            <i class="fas fa-heart"></i>
+                                        </button>
+                                        <button class="btn btn-sm">
+                                            <i class="fas fa-comment"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2024 ყველა უფლება დაცულია</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/profile.js"></script>
+</body>
+</html> 
