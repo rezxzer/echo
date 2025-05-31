@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>კონტენტი - Echo</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../css/style.css" rel="stylesheet">
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="../index.html">Echo</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">მთავარი</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">ჩვენს შესახებ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.html">კონტაქტი</a>
+                    </li>
+                </ul>
+                <div class="auth-buttons">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div id="contentContainer">
+                    <!-- Content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Comments Modal -->
+    <div class="modal fade" id="commentsModal" tabindex="-1" aria-labelledby="commentsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="commentsModalLabel">კომენტარები</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Comments will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="commentInput" placeholder="დაწერეთ კომენტარი...">
+                        <button class="btn btn-primary" type="button" onclick="addComment()">დამატება</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Echo</h5>
+                    <p>თქვენი ხმის გაჟღერება</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>&copy; 2024 Echo. ყველა უფლება დაცულია.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Supabase Client -->
+    <script src="../js/supabase.js"></script>
+    <!-- Custom JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Get content ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const contentId = urlParams.get('id');
+
+            if (!contentId) {
+                window.location.href = '../index.html';
+                return;
+            }
+
+            try {
+                // Fetch content
+                const { data: content, error } = await window.supabaseClient.fetchContent(contentId);
+                if (error) throw error;
+
+                // Display content
+                const contentContainer = document.getElementById('contentContainer');
+                contentContainer.innerHTML = `
+                    <div class="card">
+                        ${content.thumbnail ? `
+                            <img src="${content.thumbnail}" class="card-img-top" alt="${content.title}">
+                        ` : ''}
+                        <div class="card-body">
+                            <h1 class="card-title">${content.title}</h1>
+                            <div class="card-meta mb-3">
+                                <span class="author">
+                                    <img src="${content.profiles.avatar_url || '../images/default-avatar.png'}" alt="Avatar" class="avatar">
+                                    ${content.profiles.username}
+                                </span>
+                                <span class="date">${new Date(content.created_at).toLocaleDateString()}</span>
+                            </div>
+                            ${content.media ? `
+                                <div class="media-container mb-3">
+                                    ${content.type === 'video' ? `
+                                        <video controls class="w-100">
+                                            <source src="${content.media}" type="video/mp4">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    ` : `
+                                        <img src="${content.media}" class="img-fluid" alt="${content.title}">
+                                    `}
+                                </div>
+                            ` : ''}
+                            <div class="card-text">${content.content}</div>
+                            ${content.tags?.length ? `
+                                <div class="tags mt-3">
+                                    ${content.tags.map(tag => `
+                                        <span class="badge bg-secondary">${tag}</span>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <button class="btn btn-outline-primary me-2" onclick="handleLike()">
+                                        <i class="fas fa-heart"></i> ${content.likes?.length || 0}
+                                    </button>
+                                    <span class="text-muted">
+                                        <i class="fas fa-eye"></i> ${content.views || 0}
+                                    </span>
+                                </div>
+                                ${content.user_id === (await window.supabaseClient.getCurrentUser())?.id ? `
+                                    <div>
+                                        <a href="edit-content.html?id=${content.id}" class="btn btn-outline-secondary me-2">
+                                            <i class="fas fa-edit"></i> რედაქტირება
+                                        </a>
+                                        <button class="btn btn-outline-danger" onclick="handleDelete()">
+                                            <i class="fas fa-trash"></i> წაშლა
+                                        </button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            <div class="card-actions mt-3">
+                                <button onclick="showComments('${content.id}')" class="btn btn-outline-secondary">
+                                    <i class="fas fa-comment"></i> ${content.comments?.length || 0}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Update page title
+                document.title = `${content.title} - Echo`;
+            } catch (error) {
+                console.error('Error loading content:', error);
+                alert('კონტენტის ჩვენების შეცდომა: ' + error.message);
+            }
+        });
+
+        // Like content
+        async function handleLike() {
+            try {
+                const contentId = document.querySelector('#contentContainer').dataset.contentId;
+                const { data, error } = await window.supabaseClient.likeContent(contentId);
+                if (error) throw error;
+                window.location.reload();
+            } catch (error) {
+                console.error('Like error:', error);
+                alert('მოწონების შეცდომა: ' + error.message);
+            }
+        }
+
+        // Show comments
+        async function showComments(contentId) {
+            try {
+                const { data, error } = await window.supabaseClient.getComments(contentId);
+                if (error) throw error;
+
+                const modal = document.getElementById('commentsModal');
+                modal.dataset.contentId = contentId;
+                
+                const commentsContainer = modal.querySelector('.modal-body');
+                commentsContainer.innerHTML = '';
+
+                data.forEach(comment => {
+                    const commentElement = createCommentElement(comment);
+                    commentsContainer.appendChild(commentElement);
+                });
+
+                new bootstrap.Modal(modal).show();
+            } catch (error) {
+                console.error('Comments error:', error);
+            }
+        }
+
+        // Create comment element
+        function createCommentElement(comment) {
+            const div = document.createElement('div');
+            div.className = 'comment';
+            div.innerHTML = `
+                <div class="comment-header">
+                    <img src="${comment.profiles.avatar_url || '../images/default-avatar.png'}" alt="Avatar" class="avatar">
+                    <span class="username">${comment.profiles.username}</span>
+                    <span class="date">${new Date(comment.created_at).toLocaleDateString()}</span>
+                </div>
+                <div class="comment-content">
+                    ${comment.content}
+                </div>
+            `;
+            return div;
+        }
+
+        // Add comment
+        async function addComment() {
+            const commentInput = document.getElementById('commentInput');
+            const content = commentInput.value.trim();
+            
+            if (!content) {
+                alert('გთხოვთ შეიყვანოთ კომენტარი');
+                return;
+            }
+
+            try {
+                const currentContentId = document.querySelector('#commentsModal').dataset.contentId;
+                const { data, error } = await window.supabaseClient.addComment(currentContentId, content);
+                if (error) throw error;
+
+                // Clear input and reload comments
+                commentInput.value = '';
+                await showComments(currentContentId);
+            } catch (error) {
+                console.error('Comment error:', error);
+                alert('კომენტარის დამატების შეცდომა: ' + error.message);
+            }
+        }
+
+        // Delete content
+        async function handleDelete() {
+            try {
+                const contentId = document.querySelector('#contentContainer').dataset.contentId;
+                const { data, error } = await window.supabaseClient.deleteContent(contentId);
+                if (error) throw error;
+                window.location.href = '../index.html';
+            } catch (error) {
+                console.error('Delete error:', error);
+                alert('კონტენტის წაშლის შეცდომა: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html> 
