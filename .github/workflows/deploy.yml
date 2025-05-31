@@ -23,6 +23,11 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v3
 
+      - name: Create .env file
+        run: |
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > .env
+          echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
