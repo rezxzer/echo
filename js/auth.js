@@ -1,6 +1,19 @@
 // Authentication functions
 async function register(email, password, username) {
     try {
+        // Check if user already exists
+        const { data: existingUser } = await window.supabaseClient.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (existingUser?.user) {
+            return { 
+                data: null, 
+                error: { message: 'This email is already registered. Please try logging in instead.' } 
+            };
+        }
+
         const { data, error } = await window.supabaseClient.auth.signUp({
             email,
             password,
@@ -12,6 +25,13 @@ async function register(email, password, username) {
         return { data, error: null };
     } catch (error) {
         console.error('Registration error:', error);
+        // Return user-friendly error message
+        if (error.message.includes('already registered')) {
+            return { 
+                data: null, 
+                error: { message: 'This email is already registered. Please try logging in instead.' } 
+            };
+        }
         return { data: null, error };
     }
 }
