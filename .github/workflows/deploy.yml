@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -29,4 +32,5 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: . # The folder the action should deploy
-          branch: gh-pages # The branch the action should deploy to 
+          branch: gh-pages # The branch the action should deploy to
+          token: ${{ secrets.GH_PAT }} # Use the PAT token 
