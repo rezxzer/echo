@@ -267,10 +267,11 @@ main {
 
 /* Navbar styles */
 .navbar {
-    padding: 1rem 0;
-    background: linear-gradient(45deg, rgba(26, 26, 26, 0.95), rgba(42, 42, 42, 0.95)) !important;
+    background: rgba(26, 26, 26, 0.95) !important;
     backdrop-filter: blur(10px);
-    position: relative;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem 0;
+    transition: all 0.3s ease;
 }
 
 .navbar .container {
@@ -280,11 +281,13 @@ main {
 }
 
 .navbar-brand {
+    font-size: 1.5rem;
     font-weight: bold;
-    font-size: 1.2rem;
-    color: #ff4d4d !important;
-    text-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
-    margin-right: 2rem;
+    color: #fff !important;
+    text-decoration: none;
+    position: relative;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
 }
 
 .echo-brand {
@@ -1245,47 +1248,45 @@ footer {
 /* Hero Section Styles */
 .hero-section {
     position: relative;
-    min-height: 80vh;
+    min-height: 100vh;
     display: flex;
     align-items: center;
-    justify-content: center;
+    position: relative;
     overflow: hidden;
-    background: linear-gradient(45deg, #1a1a1a, #2a2a2a);
     padding: 4rem 0;
+    background: linear-gradient(45deg, rgba(26, 26, 26, 0.9), rgba(42, 42, 42, 0.9));
 }
 
 .hero-content {
     position: relative;
     z-index: 2;
     text-align: center;
-    color: #fff;
-    max-width: 800px;
     padding: 2rem;
 }
 
 .hero-title {
-    font-size: 4rem;
-    font-weight: 800;
-    margin-bottom: 1.5rem;
-    background: linear-gradient(45deg, #ff4d4d, #ff8533, #ffcc00);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: titleGlow 3s ease-in-out infinite;
+    font-size: 3.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #fff;
+    text-shadow: 0 0 20px rgba(255, 77, 77, 0.5);
+    animation: fadeInUp 1s ease;
 }
 
 .hero-subtitle {
     font-size: 1.5rem;
+    color: #ccc;
     margin-bottom: 2rem;
-    color: rgba(255, 255, 255, 0.8);
-    animation: fadeInUp 1s ease-out;
+    animation: fadeInUp 1s ease 0.2s;
+    animation-fill-mode: both;
 }
 
 .hero-buttons {
     display: flex;
     gap: 1rem;
     justify-content: center;
-    margin-top: 2rem;
+    animation: fadeInUp 1s ease 0.4s;
+    animation-fill-mode: both;
 }
 
 .hero-btn {
@@ -1295,6 +1296,7 @@ footer {
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+    z-index: 1;
 }
 
 .hero-btn::before {
@@ -1304,38 +1306,35 @@ footer {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(45deg, #ff4d4d, #ff8533, #ffcc00);
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    background: linear-gradient(45deg, #ff4d4d, #ff8533);
     z-index: -1;
-}
-
-.hero-btn:hover::before {
-    opacity: 1;
+    transition: opacity 0.3s ease;
 }
 
 .hero-btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(255, 77, 77, 0.3);
+    box-shadow: 0 5px 15px rgba(255, 77, 77, 0.4);
 }
 
-/* Particle Background */
+/* Particles */
 .particles {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    overflow: hidden;
     z-index: 1;
 }
 
 .particle {
     position: absolute;
-    width: 4px;
-    height: 4px;
+    width: 6px;
+    height: 6px;
     background: #ff4d4d;
     border-radius: 50%;
-    animation: particleFloat 20s linear infinite;
+    animation: particleFloat 3s infinite ease-in-out;
+    opacity: 0.6;
 }
 
 @keyframes particleFloat {
@@ -1344,7 +1343,7 @@ footer {
         opacity: 0;
     }
     50% {
-        opacity: 0.8;
+        opacity: 0.6;
     }
     100% {
         transform: translateY(-100vh) translateX(100px);
@@ -1352,16 +1351,63 @@ footer {
     }
 }
 
-@keyframes titleGlow {
-    0%, 100% {
-        text-shadow: 0 0 20px rgba(255, 77, 77, 0.5);
-    }
-    50% {
-        text-shadow: 0 0 30px rgba(255, 77, 77, 0.8),
-                     0 0 40px rgba(255, 133, 51, 0.6);
-    }
+/* Features section */
+.features-section {
+    padding: 5rem 0;
+    background: linear-gradient(45deg, rgba(26, 26, 26, 0.95), rgba(42, 42, 42, 0.95));
 }
 
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 77, 77, 0.3);
+}
+
+.value-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    height: 100%;
+}
+
+.value-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 30px rgba(255, 77, 77, 0.2);
+    border-color: rgba(255, 77, 77, 0.3);
+}
+
+.value-icon {
+    font-size: 2.5rem;
+    color: #ff4d4d;
+    margin-bottom: 1.5rem;
+}
+
+.value-card h3 {
+    color: #fff;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.value-card p {
+    color: #ccc;
+    margin-bottom: 0;
+}
+
+/* Footer */
+footer {
+    background: rgba(26, 26, 26, 0.95);
+    color: #fff;
+    text-align: center;
+    padding: 2rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Animations */
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -1370,6 +1416,25 @@ footer {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+    }
+    
+    .section-title {
+        font-size: 2rem;
     }
 }
 
