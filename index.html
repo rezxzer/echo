@@ -111,6 +111,39 @@
         </div>
     </section>
 
+    <!-- Main Content -->
+    <main class="container mt-4">
+        <h2>Latest Videos</h2>
+        
+        <!-- Video Carousel -->
+        <div id="videoCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators" id="carouselIndicators">
+                <!-- Indicators will be added dynamically -->
+            </div>
+            
+            <div class="carousel-inner" id="carouselVideos">
+                <!-- Videos will be loaded here -->
+            </div>
+            
+            <button class="carousel-control-prev" type="button" data-bs-target="#videoCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#videoCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+
+        <!-- Video Grid -->
+        <div class="mt-4">
+            <h3>All Videos</h3>
+            <div id="videos-grid" class="row g-3">
+                <!-- Videos will be loaded here -->
+            </div>
+        </div>
+    </main>
+
     <!-- Footer -->
     <footer>
         <div class="container">
@@ -126,11 +159,125 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
-    <script src="js/supabase.js"></script>
+    <script src="js/config.js"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/database.js"></script>
     <script src="js/auto-update.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/git-auto-update.js"></script>
+    <script>
+        // Load all videos
+        async function loadAllVideos() {
+            try {
+                const { data: videos, error } = await window.db.getAllVideos();
+                if (error) throw error;
+
+                // Update carousel
+                const carouselVideos = document.getElementById('carouselVideos');
+                const carouselIndicators = document.getElementById('carouselIndicators');
+                
+                carouselVideos.innerHTML = videos.map((video, index) => `
+                    <div class="carousel-item ${index === 0 ? 'active' : ''}">
+                        <div class="video-container">
+                            <video class="d-block w-100" src="${video.video_url}" controls></video>
+                            <div class="carousel-caption">
+                                <h5>${video.title}</h5>
+                                <p>${video.description || ''}</p>
+                                <p class="uploader">Posted by ${video.profiles?.username || 'Unknown'}</p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                carouselIndicators.innerHTML = videos.map((_, index) => `
+                    <button type="button" 
+                            data-bs-target="#videoCarousel" 
+                            data-bs-slide-to="${index}" 
+                            ${index === 0 ? 'class="active" aria-current="true"' : ''}
+                            aria-label="Slide ${index + 1}">
+                    </button>
+                `).join('');
+
+                // Update grid
+                const videosGrid = document.getElementById('videos-grid');
+                videosGrid.innerHTML = videos.map(video => `
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card">
+                            <video class="card-img-top" src="${video.video_url}" controls></video>
+                            <div class="card-body">
+                                <h5 class="card-title">${video.title}</h5>
+                                <p class="card-text">${video.description || ''}</p>
+                                <p class="card-text">
+                                    <small class="text-muted">Posted by ${video.profiles?.username || 'Unknown'}</small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading videos:', error);
+            }
+        }
+
+        // Load videos on page load
+        loadAllVideos();
+    </script>
+
+    <style>
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            background: #000;
+        }
+
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .carousel-caption {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            bottom: 20px;
+        }
+
+        .carousel-caption h5 {
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .carousel-caption p {
+            margin-bottom: 5px;
+        }
+
+        .carousel-caption .uploader {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 5%;
+            opacity: 0.8;
+        }
+
+        .carousel-indicators {
+            margin-bottom: 1rem;
+        }
+
+        .carousel-indicators button {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin: 0 5px;
+        }
+    </style>
 </body>
 </html> 
