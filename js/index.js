@@ -1,3 +1,7 @@
+// Import required modules
+import { supabase } from './supabase.js';
+import { testConnection } from './supabase-config.js';
+
 // DOM Elements
 const featuredVideos = document.getElementById('featuredVideos');
 const categories = document.getElementById('categories');
@@ -18,211 +22,122 @@ let userSubscriptionStatus = null;
 // Initialize page
 async function initPage() {
     try {
+        // Test Supabase connection
+        const isConnected = await testConnection();
+        if (!isConnected) {
+            throw new Error('Failed to connect to Supabase');
+        }
+
         // Check authentication
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-            currentUser = user;
-            await loadUserProfile();
-            await loadUserSubscription();
+        const { data: { session }, error: authError } = await supabase.auth.getSession();
+        if (authError) throw authError;
+
+        if (session) {
+            // User is authenticated
+            console.log('User is authenticated:', session.user);
+            // Load user profile
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+            
+            if (profileError) {
+                console.error('Error loading profile:', profileError.message);
+            } else {
+                console.log('User profile loaded:', profile);
+                await loadUserProfile(profile);
+            }
+        } else {
+            // User is not authenticated
+            console.log('User is not authenticated');
+            // Show login form or redirect to login page
+            document.getElementById('loginForm').style.display = 'block';
         }
 
         // Load content
-        await Promise.all([
-            loadFeaturedVideos(),
-            loadCategories(),
-            loadPopularTags(),
-            loadRecommendedVideos()
-        ]);
+        await loadContent();
 
         // Add event listeners
         addEventListeners();
     } catch (error) {
-        console.error('Error initializing page:', error);
-        showError('Failed to load page content');
+        console.error('Error initializing page:', error.message);
+        showError('Failed to load page content: ' + error.message);
     }
 }
 
 // Load user profile
-async function loadUserProfile() {
+async function loadUserProfile(profile) {
     try {
-        const { data: profile, error } = await supabase
-            .from('users')
-            .select('username, avatar_url')
-            .eq('id', currentUser.id)
-            .single();
-
-        if (error) throw error;
-
         userName.textContent = profile.username;
-        userAvatar.src = profile.avatar_url || 'https://via.placeholder.com/24';
+        userAvatar.src = profile.avatar_url || 'https://via.placeholder.com/32';
     } catch (error) {
         console.error('Error loading user profile:', error);
+        showError('Failed to load user profile');
     }
 }
 
 // Load user subscription
 async function loadUserSubscription() {
     try {
-        userSubscriptionStatus = await window.monetizationService.getUserSubscription();
-        
-        if (userSubscriptionStatus?.status === 'active') {
-            userSubscription.innerHTML = `
-                <span class="badge bg-success">
-                    <i class="fas fa-crown me-1"></i>
-                    Premium
-                </span>
-            `;
-        } else {
-            userSubscription.innerHTML = `
-                <button class="btn btn-sm btn-outline-warning" onclick="showSubscriptionModal()">
-                    <i class="fas fa-crown me-1"></i>
-                    Upgrade
-                </button>
-            `;
-        }
+        // For now, just show the upgrade button
+        userSubscription.innerHTML = `
+            <button class="btn btn-sm btn-outline-warning" onclick="showSubscriptionModal()">
+                <i class="fas fa-crown me-1"></i>
+                Upgrade
+            </button>
+        `;
     } catch (error) {
         console.error('Error loading user subscription:', error);
+        showError('Failed to load subscription status');
     }
 }
 
-// Load featured videos
-async function loadFeaturedVideos() {
+// Load content
+async function loadContent() {
     try {
-        let query = supabase
+        // Load featured videos
+        const { data: featuredVideosData, error: videosError } = await supabase
             .from('videos')
-            .select('*, users(*)')
-            .order('created_at', { ascending: false });
-
-        switch (currentFilter) {
-            case 'trending':
-                query = query.order('views', { ascending: false });
-                break;
-            case 'popular':
-                query = query.order('likes', { ascending: false });
-                break;
-        }
-
-        const { data: videos, error } = await query.limit(6);
-
-        if (error) throw error;
-
-        featuredVideos.innerHTML = videos.map(video => `
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <img src="${video.thumbnail_url}" 
-                         alt="${video.title}" 
-                         class="card-img-top" 
-                         style="height: 200px; object-fit: cover;">
-                    <div class="card-body">
-                        <h5 class="card-title">${video.title}</h5>
-                        <p class="card-text text-muted">
-                            <small>
-                                <i class="fas fa-user me-1"></i>${video.users.username}
-                                <br>
-                                <i class="fas fa-eye me-1"></i>${video.views || 0} views
-                                <br>
-                                <i class="fas fa-calendar me-1"></i>${new Date(video.created_at).toLocaleDateString()}
-                            </small>
-                        </p>
-                        <a href="video.html?id=${video.id}" class="btn btn-primary">Watch Now</a>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    } catch (error) {
-        console.error('Error loading featured videos:', error);
-        showError('Failed to load featured videos');
-    }
-}
-
-// Load categories
-async function loadCategories() {
-    try {
-        const { data: categories, error } = await supabase
-            .from('categories')
             .select('*')
-            .order('name');
+            .eq('featured', true)
+            .limit(6);
 
-        if (error) throw error;
+        if (videosError) throw videosError;
+        console.log('Featured videos loaded:', featuredVideosData);
 
-        categories.innerHTML = categories.map(category => `
-            <div class="col-md-3 mb-4">
-                <a href="category.html?id=${category.id}" class="text-decoration-none">
-                    <div class="card h-100">
-                        <div class="card-body text-center">
-                            <i class="${category.icon} fa-2x mb-3 text-primary"></i>
-                            <h5 class="card-title">${category.name}</h5>
-                            <p class="card-text text-muted">${category.video_count || 0} videos</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        `).join('');
-    } catch (error) {
-        console.error('Error loading categories:', error);
-        showError('Failed to load categories');
-    }
-}
+        // Load categories
+        const { data: categoriesData, error: categoriesError } = await supabase
+            .from('categories')
+            .select('*');
 
-// Load popular tags
-async function loadPopularTags() {
-    try {
-        const { data: tags, error } = await supabase
+        if (categoriesError) throw categoriesError;
+        console.log('Categories loaded:', categoriesData);
+
+        // Load popular tags
+        const { data: tagsData, error: tagsError } = await supabase
             .from('tags')
             .select('*')
-            .order('usage_count', { ascending: false })
+            .order('count', { ascending: false })
             .limit(10);
 
-        if (error) throw error;
+        if (tagsError) throw tagsError;
+        console.log('Popular tags loaded:', tagsData);
 
-        popularTags.innerHTML = tags.map(tag => `
-            <a href="tag.html?id=${tag.id}" class="btn btn-outline-primary">
-                #${tag.name}
-                <span class="badge bg-light text-dark ms-1">${tag.usage_count}</span>
-            </a>
-        `).join('');
+        // Load recommended videos
+        await loadRecommendedVideos();
     } catch (error) {
-        console.error('Error loading popular tags:', error);
-        showError('Failed to load popular tags');
+        console.error('Error loading content:', error.message);
+        showError('Failed to load page content');
     }
 }
 
 // Load recommended videos
 async function loadRecommendedVideos() {
     try {
-        if (!currentUser) {
-            // If user is not logged in, show popular videos
-            const { data: videos, error } = await supabase
-                .from('videos')
-                .select('*, users(*)')
-                .order('views', { ascending: false })
-                .limit(6);
-
-            if (error) throw error;
-
-            recommendedVideos.innerHTML = videos.map(video => createVideoCard(video)).join('');
-            return;
-        }
-
-        // Get user's watch history and preferences
-        const { data: history, error: historyError } = await supabase
-            .from('watch_history')
-            .select('video_id')
-            .eq('user_id', currentUser.id)
-            .order('watched_at', { ascending: false })
-            .limit(10);
-
-        if (historyError) throw historyError;
-
-        // Get video IDs from history
-        const videoIds = history.map(h => h.video_id);
-
-        // Get recommended videos based on watch history
         const { data: videos, error } = await supabase
             .from('videos')
-            .select('*, users(*)')
-            .in('category_id', videoIds)
-            .neq('id', videoIds)
+            .select('*, profiles(username)')
             .order('views', { ascending: false })
             .limit(6);
 
@@ -248,7 +163,7 @@ function createVideoCard(video) {
                     <h5 class="card-title">${video.title}</h5>
                     <p class="card-text text-muted">
                         <small>
-                            <i class="fas fa-user me-1"></i>${video.users.username}
+                            <i class="fas fa-user me-1"></i>${video.profiles.username}
                             <br>
                             <i class="fas fa-eye me-1"></i>${video.views || 0} views
                             <br>
@@ -301,17 +216,6 @@ async function subscribeToPlan(planId) {
     }
 }
 
-// Handle logout
-async function handleLogout() {
-    try {
-        await supabase.auth.signOut();
-        window.location.href = '/login.html';
-    } catch (error) {
-        console.error('Error logging out:', error);
-        showError('Failed to log out');
-    }
-}
-
 // Show success message
 function showSuccess(message) {
     const alert = document.createElement('div');
@@ -345,13 +249,20 @@ function addEventListeners() {
                 btn.classList.remove('active');
             });
             button.classList.add('active');
-            currentFilter = button.dataset.filter;
-            loadFeaturedVideos();
+            loadContent();
         });
     });
 
     // Logout button
-    logoutBtn.addEventListener('click', handleLogout);
+    logoutBtn.addEventListener('click', async () => {
+        try {
+            await supabase.auth.signOut();
+            window.location.href = '/login.html';
+        } catch (error) {
+            console.error('Error logging out:', error);
+            showError('Failed to log out');
+        }
+    });
 }
 
 // Initialize page when DOM is loaded

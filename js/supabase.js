@@ -1,7 +1,49 @@
-// Initialize Supabase client
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+// Import Supabase client from config
+import { supabaseClient } from './supabase-config.js';
+
+// Export the client for use in other files
+export const supabase = supabaseClient;
+
+// Initialize auth state
+let currentUser = null;
+
+// Auth state change listener
+supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN') {
+        currentUser = session.user;
+        console.log('User signed in:', currentUser);
+    } else if (event === 'SIGNED_OUT') {
+        currentUser = null;
+        console.log('User signed out');
+    }
+});
+
+// Export auth functions
+export const auth = {
+    getCurrentUser: () => currentUser,
+    signIn: async (email, password) => {
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password
+            });
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            console.error('Error signing in:', error.message);
+            throw error;
+        }
+    },
+    signOut: async () => {
+        try {
+            const { error } = await supabase.auth.signOut();
+            if (error) throw error;
+        } catch (error) {
+            console.error('Error signing out:', error.message);
+            throw error;
+        }
+    }
+};
 
 // Authentication functions
 async function register(email, password, username) {
@@ -18,31 +60,6 @@ async function register(email, password, username) {
     } catch (error) {
         console.error('Registration error:', error);
         return { data: null, error };
-    }
-}
-
-async function login(email, password) {
-    try {
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email,
-            password
-        });
-        if (error) throw error;
-        return { data, error: null };
-    } catch (error) {
-        console.error('Login error:', error);
-        return { data: null, error };
-    }
-}
-
-async function logout() {
-    try {
-        const { error } = await supabase.auth.signOut();
-        if (error) throw error;
-        return { error: null };
-    } catch (error) {
-        console.error('Logout error:', error);
-        return { error };
     }
 }
 
@@ -600,9 +617,7 @@ async function searchVideos(query, page = 1, limit = 12) {
 // Export functions
 window.supabaseClient = {
     register,
-    login,
-    logout,
-    getCurrentUser,
+    auth,
     fetchContent,
     fetchSingleContent,
     createContent,
