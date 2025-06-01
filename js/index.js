@@ -124,7 +124,7 @@ async function loadFeaturedVideos() {
                                 <i class="fas fa-calendar me-1"></i>${new Date(video.created_at).toLocaleDateString()}
                             </small>
                         </p>
-                        <a href="/video.html?id=${video.id}" class="btn btn-primary">Watch Now</a>
+                        <a href="video.html?id=${video.id}" class="btn btn-primary">Watch Now</a>
                     </div>
                 </div>
             </div>
@@ -147,7 +147,7 @@ async function loadCategories() {
 
         categories.innerHTML = categories.map(category => `
             <div class="col-md-3 mb-4">
-                <a href="/category.html?id=${category.id}" class="text-decoration-none">
+                <a href="category.html?id=${category.id}" class="text-decoration-none">
                     <div class="card h-100">
                         <div class="card-body text-center">
                             <i class="${category.icon} fa-2x mb-3 text-primary"></i>
@@ -176,7 +176,7 @@ async function loadPopularTags() {
         if (error) throw error;
 
         popularTags.innerHTML = tags.map(tag => `
-            <a href="/tag.html?id=${tag.id}" class="btn btn-outline-primary">
+            <a href="tag.html?id=${tag.id}" class="btn btn-outline-primary">
                 #${tag.name}
                 <span class="badge bg-light text-dark ms-1">${tag.usage_count}</span>
             </a>
@@ -255,7 +255,7 @@ function createVideoCard(video) {
                             <i class="fas fa-calendar me-1"></i>${new Date(video.created_at).toLocaleDateString()}
                         </small>
                     </p>
-                    <a href="/video.html?id=${video.id}" class="btn btn-primary">Watch Now</a>
+                    <a href="video.html?id=${video.id}" class="btn btn-primary">Watch Now</a>
                 </div>
             </div>
         </div>
