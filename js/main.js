@@ -651,6 +651,168 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Video Management Functions
+    let currentPage = 1;
+    const itemsPerPage = 12;
+
+    async function loadVideos(page = 1, searchQuery = '') {
+        try {
+            const { data: videos, error, count } = await supabase
+                .from('videos')
+                .select('*, profiles(username)', { count: 'exact' })
+                .order('created_at', { ascending: false })
+                .range((page - 1) * itemsPerPage, page * itemsPerPage - 1);
+
+            if (error) throw error;
+
+            const videoGrid = document.getElementById('videoGrid');
+            videoGrid.innerHTML = '';
+
+            if (videos.length === 0) {
+                videoGrid.innerHTML = `
+                    <div class="col-12 text-center">
+                        <p class="text-muted">No videos found</p>
+                    </div>
+                `;
+                return;
+            }
+
+            videos.forEach(video => {
+                const videoCard = createVideoCard(video);
+                videoGrid.appendChild(videoCard);
+            });
+
+            updatePagination(page, count, itemsPerPage);
+        } catch (error) {
+            console.error('Error loading videos:', error);
+            showError('Failed to load videos. Please try again later.');
+        }
+    }
+
+    function createVideoCard(video) {
+        const card = document.createElement('div');
+        card.className = 'video-card';
+        card.innerHTML = `
+            <div class="video-thumbnail">
+                <img src="${video.thumbnail_url || 'placeholder.jpg'}" alt="${video.title}">
+                <span class="video-duration">${formatDuration(video.duration)}</span>
+            </div>
+            <div class="video-info">
+                <h3 class="video-title">${video.title}</h3>
+                <div class="video-meta">
+                    <div class="video-views">
+                        <i class="fas fa-eye"></i>
+                        <span>${formatViews(video.views)}</span>
+                    </div>
+                    <span class="video-date">${formatDate(video.created_at)}</span>
+                </div>
+                <div class="video-author">
+                    <small class="text-muted">Posted by ${video.profiles?.username || 'Unknown'}</small>
+                </div>
+            </div>
+        `;
+
+        card.addEventListener('click', () => {
+            window.location.href = `/video.html?id=${video.id}`;
+        });
+
+        return card;
+    }
+
+    function formatDuration(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = Math.floor(seconds % 60);
+        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    }
+
+    function formatViews(views) {
+        if (views >= 1000000) {
+            return `${(views / 1000000).toFixed(1)}M`;
+        } else if (views >= 1000) {
+            return `${(views / 1000).toFixed(1)}K`;
+        }
+        return views.toString();
+    }
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diff = now - date;
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+        if (days === 0) {
+            return 'Today';
+        } else if (days === 1) {
+            return 'Yesterday';
+        } else if (days < 7) {
+            return `${days} days ago`;
+        } else {
+            return date.toLocaleDateString();
+        }
+    }
+
+    function updatePagination(currentPage, totalItems, itemsPerPage) {
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        const pagination = document.getElementById('pagination');
+        pagination.innerHTML = '';
+
+        // Previous button
+        const prevButton = document.createElement('button');
+        prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>';
+        prevButton.disabled = currentPage === 1;
+        prevButton.addEventListener('click', () => loadVideos(currentPage - 1));
+        pagination.appendChild(prevButton);
+
+        // Page numbers
+        for (let i = 1; i <= totalPages; i++) {
+            if (
+                i === 1 ||
+                i === totalPages ||
+                (i >= currentPage - 2 && i <= currentPage + 2)
+            ) {
+                const pageButton = document.createElement('button');
+                pageButton.textContent = i;
+                pageButton.className = i === currentPage ? 'active' : '';
+                pageButton.addEventListener('click', () => loadVideos(i));
+                pagination.appendChild(pageButton);
+            } else if (
+                i === currentPage - 3 ||
+                i === currentPage + 3
+            ) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.className = 'pagination-ellipsis';
+                pagination.appendChild(ellipsis);
+            }
+        }
+
+        // Next button
+        const nextButton = document.createElement('button');
+        nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>';
+        nextButton.disabled = currentPage === totalPages;
+        nextButton.addEventListener('click', () => loadVideos(currentPage + 1));
+        pagination.appendChild(nextButton);
+    }
+
+    // Search functionality
+    let searchTimeout;
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const searchQuery = e.target.value.trim();
+                currentPage = 1;
+                loadVideos(currentPage, searchQuery);
+            }, 300);
+        });
+    }
+
+    // Load videos on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        loadVideos(currentPage);
+    });
 });
 
 // Helper function to create a post element

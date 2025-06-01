@@ -4,51 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: 'unsafe-inline' 'unsafe-eval'; img-src 'self' https: data:; connect-src 'self' https: wss:;">
-    <title>Echo Project</title>
+    <title>Echo - Video Platform</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Custom CSS -->
-    <link href="css/style.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container">
-            <a class="navbar-brand echo-brand" href="#">
-                Echo <span class="welcome-emoji">👋</span>
-            </a>
+            <a class="navbar-brand" href="/">Echo</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">Home</a>
+                        <a class="nav-link active" href="/">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#about">About</a>
+                        <a class="nav-link" href="/upload.html">Upload</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#features">Features</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#contact">Contact</a>
+                        <a class="nav-link" href="/monetization.html">Monetization</a>
                     </li>
                 </ul>
-                <div class="ms-3" id="auth-buttons">
-                    <a href="login.html" class="btn btn-outline-primary me-2">Login</a>
-                    <a href="register.html" class="btn btn-primary">Register</a>
-                </div>
-                <div class="ms-3 d-none" id="user-profile">
+                <div class="d-flex align-items-center">
+                    <div class="me-3" id="userSubscription">
+                        <!-- Subscription status will be loaded here -->
+                    </div>
                     <div class="dropdown">
-                        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown">
-                            <span id="username">User</span>
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown">
+                            <img id="userAvatar" src="" alt="User Avatar" class="rounded-circle me-2" style="width: 24px; height: 24px;">
+                            <span id="userName">Loading...</span>
                         </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="profile.html">Profile</a></li>
-                            <li><a class="dropdown-item" href="#" id="logout-btn">Logout</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/profile.html">Profile</a></li>
+                            <li><a class="dropdown-item" href="/monetization.html">Monetization</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutBtn">Logout</a></li>
                         </ul>
                     </div>
                 </div>
@@ -56,228 +53,110 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="container">
-            <div class="hero-content">
-                <h1 class="hero-title">Welcome to Echo</h1>
-                <p class="hero-subtitle">Your Ultimate Social Media Platform</p>
-                <div class="hero-buttons">
-                    <a href="register.html" class="hero-btn btn btn-primary">Get Started</a>
-                    <a href="#features" class="hero-btn btn btn-outline-primary">Learn More</a>
-                </div>
-            </div>
-        </div>
-        <div class="particles">
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section id="features" class="features-section">
-        <div class="container">
-            <h2 class="section-title">Why Choose Echo?</h2>
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="value-card">
-                        <div class="value-icon">
-                            <i class="fas fa-bolt"></i>
-                        </div>
-                        <h3>Lightning Fast</h3>
-                        <p>Experience blazing fast performance with our optimized platform.</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="value-card">
-                        <div class="value-icon">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <h3>Secure & Private</h3>
-                        <p>Your data is protected with enterprise-grade security.</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="value-card">
-                        <div class="value-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <h3>Community Driven</h3>
-                        <p>Join a vibrant community of like-minded individuals.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Main Content -->
-    <main class="container mt-4">
-        <h2>Latest Videos</h2>
-        
-        <!-- Video Carousel -->
-        <div id="videoCarousel" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-indicators" id="carouselIndicators">
-                <!-- Indicators will be added dynamically -->
+    <div class="container py-5">
+        <!-- Featured Videos -->
+        <section class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Featured Videos</h2>
+                <div class="btn-group">
+                    <button class="btn btn-outline-primary active" data-filter="trending">Trending</button>
+                    <button class="btn btn-outline-primary" data-filter="newest">Newest</button>
+                    <button class="btn btn-outline-primary" data-filter="popular">Popular</button>
+                </div>
             </div>
-            
-            <div class="carousel-inner" id="carouselVideos">
-                <!-- Videos will be loaded here -->
+            <div class="row" id="featuredVideos">
+                <!-- Featured videos will be loaded here -->
             </div>
-            
-            <button class="carousel-control-prev" type="button" data-bs-target="#videoCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#videoCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
-        </div>
+        </section>
 
-        <!-- Video Grid -->
-        <div class="mt-4">
-            <h3>All Videos</h3>
-            <div id="videos-grid" class="row g-3">
-                <!-- Videos will be loaded here -->
+        <!-- Categories -->
+        <section class="mb-5">
+            <h2 class="mb-4">Categories</h2>
+            <div class="row" id="categories">
+                <!-- Categories will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Popular Tags -->
+        <section class="mb-5">
+            <h2 class="mb-4">Popular Tags</h2>
+            <div class="d-flex flex-wrap gap-2" id="popularTags">
+                <!-- Popular tags will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Recommended Videos -->
+        <section>
+            <h2 class="mb-4">Recommended for You</h2>
+            <div class="row" id="recommendedVideos">
+                <!-- Recommended videos will be loaded here -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Subscription Modal -->
+    <div class="modal fade" id="subscriptionModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upgrade to Premium</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-crown text-warning fa-3x mb-3"></i>
+                        <h4>Enjoy Ad-Free Experience</h4>
+                        <p class="text-muted">Upgrade to our premium plan and enjoy an uninterrupted viewing experience.</p>
+                    </div>
+                    <div id="subscriptionPlans">
+                        <!-- Subscription plans will be loaded here -->
+                    </div>
+                </div>
             </div>
         </div>
-    </main>
+    </div>
 
     <!-- Footer -->
-    <footer>
+    <footer class="bg-dark text-light py-4 mt-5">
         <div class="container">
-            <p>&copy; 2024 Echo Project. All rights reserved.</p>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Echo</h5>
+                    <p>Share your moments with the world.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/about.html" class="text-light">About</a></li>
+                        <li><a href="/features.html" class="text-light">Features</a></li>
+                        <li><a href="/contact.html" class="text-light">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Follow Us</h5>
+                    <div class="social-links">
+                        <a href="#" class="text-light me-2"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-light me-2"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-light me-2"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <p class="mb-0">&copy; 2024 Echo. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 
-    <!-- Supabase JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        window.supabase = supabase;
-    </script>
-    <!-- Bootstrap JS -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS -->
-    <script src="js/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
+    <script src="js/supabase.js"></script>
     <script src="js/auth.js"></script>
-    <script src="js/database.js"></script>
-    <script src="js/auto-update.js"></script>
-    <script src="js/git-auto-update.js"></script>
-    <script>
-        // Load all videos
-        async function loadAllVideos() {
-            try {
-                const { data: videos, error } = await window.db.getAllVideos();
-                if (error) throw error;
-
-                // Update carousel
-                const carouselVideos = document.getElementById('carouselVideos');
-                const carouselIndicators = document.getElementById('carouselIndicators');
-                
-                carouselVideos.innerHTML = videos.map((video, index) => `
-                    <div class="carousel-item ${index === 0 ? 'active' : ''}">
-                        <div class="video-container">
-                            <video class="d-block w-100" src="${video.video_url}" controls></video>
-                            <div class="carousel-caption">
-                                <h5>${video.title}</h5>
-                                <p>${video.description || ''}</p>
-                                <p class="uploader">Posted by ${video.profiles?.username || 'Unknown'}</p>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-
-                carouselIndicators.innerHTML = videos.map((_, index) => `
-                    <button type="button" 
-                            data-bs-target="#videoCarousel" 
-                            data-bs-slide-to="${index}" 
-                            ${index === 0 ? 'class="active" aria-current="true"' : ''}
-                            aria-label="Slide ${index + 1}">
-                    </button>
-                `).join('');
-
-                // Update grid
-                const videosGrid = document.getElementById('videos-grid');
-                videosGrid.innerHTML = videos.map(video => `
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card">
-                            <video class="card-img-top" src="${video.video_url}" controls></video>
-                            <div class="card-body">
-                                <h5 class="card-title">${video.title}</h5>
-                                <p class="card-text">${video.description || ''}</p>
-                                <p class="card-text">
-                                    <small class="text-muted">Posted by ${video.profiles?.username || 'Unknown'}</small>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('Error loading videos:', error);
-            }
-        }
-
-        // Load videos on page load
-        loadAllVideos();
-    </script>
-
-    <style>
-        .video-container {
-            position: relative;
-            width: 100%;
-            height: 0;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-            background: #000;
-        }
-
-        .video-container video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .carousel-caption {
-            background: rgba(0, 0, 0, 0.7);
-            padding: 20px;
-            border-radius: 10px;
-            bottom: 20px;
-        }
-
-        .carousel-caption h5 {
-            margin-bottom: 10px;
-            font-size: 1.5rem;
-        }
-
-        .carousel-caption p {
-            margin-bottom: 5px;
-        }
-
-        .carousel-caption .uploader {
-            font-size: 0.9rem;
-            color: #ccc;
-        }
-
-        .carousel-control-prev,
-        .carousel-control-next {
-            width: 5%;
-            opacity: 0.8;
-        }
-
-        .carousel-indicators {
-            margin-bottom: 1rem;
-        }
-
-        .carousel-indicators button {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin: 0 5px;
-        }
-    </style>
+    <script src="js/monetization.js"></script>
+    <script src="js/index.js"></script>
 </body>
 </html> 

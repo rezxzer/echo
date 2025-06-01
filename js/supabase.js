@@ -347,6 +347,256 @@ async function unlikeContent(contentId) {
     }
 }
 
+// Video management functions
+/**
+ * Upload a video to Supabase storage and create a video record
+ * @param {File} videoFile - The video file to upload
+ * @param {File} thumbnailFile - Optional thumbnail file
+ * @param {Object} metadata - Video metadata
+ * @returns {Promise<{data: Object, error: Error}>}
+ */
+async function uploadVideo(videoFile, thumbnailFile, metadata) {
+    try {
+        // Get current user
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('User not authenticated');
+
+        // Generate unique file names
+        const videoFileName = `${user.id}/${Date.now()}_${videoFile.name}`;
+        const thumbnailFileName = thumbnailFile ? `${user.id}/${Date.now()}_${thumbnailFile.name}` : null;
+
+        // Upload video file
+        const { data: videoData, error: videoError } = await supabase.storage
+            .from('videos')
+            .upload(videoFileName, videoFile, {
+                cacheControl: '3600',
+                upsert: false
+            });
+
+        if (videoError) throw videoError;
+
+        // Upload thumbnail if provided
+        let thumbnailUrl = null;
+        if (thumbnailFile) {
+            const { data: thumbnailData, error: thumbnailError } = await supabase.storage
+                .from('thumbnails')
+                .upload(thumbnailFileName, thumbnailFile, {
+                    cacheControl: '3600',
+                    upsert: false
+                });
+
+            if (thumbnailError) throw thumbnailError;
+            thumbnailUrl = thumbnailData.path;
+        }
+
+        // Get video duration
+        const duration = await getVideoDuration(videoFile);
+
+        // Create video record
+        const { data, error } = await supabase
+            .from('videos')
+            .insert([
+                {
+                    user_id: user.id,
+                    title: metadata.title,
+                    description: metadata.description,
+                    video_path: videoData.path,
+                    thumbnail_path: thumbnailUrl,
+                    duration: duration,
+                    visibility: metadata.visibility,
+                    status: 'processing'
+                }
+            ])
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        return { data, error: null };
+    } catch (error) {
+        console.error('Error uploading video:', error);
+        return { data: null, error };
+    }
+}
+
+/**
+ * Get video duration using HTML5 video element
+ * @param {File} videoFile - The video file
+ * @returns {Promise<number>} - Duration in seconds
+ */
+function getVideoDuration(videoFile) {
+    return new Promise((resolve, reject) => {
+        const video = document.createElement('video');
+        video.preload = 'metadata';
+
+        video.onloadedmetadata = () => {
+            window.URL.revokeObjectURL(video.src);
+            resolve(Math.round(video.duration));
+        };
+
+        video.onerror = () => {
+            window.URL.revokeObjectURL(video.src);
+            reject(new Error('Error loading video metadata'));
+        };
+
+        video.src = URL.createObjectURL(videoFile);
+    });
+}
+
+/**
+ * Update video processing status
+ * @param {string} videoId - The video ID
+ * @param {string} status - The new status
+ * @returns {Promise<{data: Object, error: Error}>}
+ */
+async function updateVideoStatus(videoId, status) {
+    try {
+        const { data, error } = await supabase
+            .from('videos')
+            .update({ status })
+            .eq('id', videoId)
+            .select()
+            .single();
+
+        if (error) throw error;
+        return { data, error: null };
+    } catch (error) {
+        console.error('Error updating video status:', error);
+        return { data: null, error };
+    }
+}
+
+/**
+ * Get video upload progress
+ * @param {string} videoId - The video ID
+ * @returns {Promise<{data: Object, error: Error}>}
+ */
+async function getVideoUploadProgress(videoId) {
+    try {
+        const { data, error } = await supabase
+            .from('videos')
+            .select('status, processing_progress')
+            .eq('id', videoId)
+            .single();
+
+        if (error) throw error;
+        return { data, error: null };
+    } catch (error) {
+        console.error('Error getting upload progress:', error);
+        return { data: null, error };
+    }
+}
+
+async function getVideoById(videoId) {
+    try {
+        const { data, error } = await supabase
+            .from('videos')
+            .select('*, profiles(username)')
+            .eq('id', videoId)
+            .single();
+
+        if (error) throw error;
+
+        return { data, error: null };
+    } catch (error) {
+        console.error('Error fetching video:', error);
+        return { data: null, error };
+    }
+}
+
+async function updateVideo(videoId, updates) {
+    try {
+        const { data, error } = await supabase
+            .from('videos')
+            .update(updates)
+            .eq('id', videoId)
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        return { data, error: null };
+    } catch (error) {
+        console.error('Error updating video:', error);
+        return { data: null, error };
+    }
+}
+
+async function deleteVideo(videoId) {
+    try {
+        // Get video data first
+        const { data: video, error: fetchError } = await getVideoById(videoId);
+        if (fetchError) throw fetchError;
+
+        // Delete video file from storage
+        if (video.video_url) {
+            const { error: videoDeleteError } = await supabase.storage
+                .from('content')
+                .remove([video.video_url]);
+
+            if (videoDeleteError) throw videoDeleteError;
+        }
+
+        // Delete thumbnail from storage
+        if (video.thumbnail_url) {
+            const { error: thumbnailDeleteError } = await supabase.storage
+                .from('content')
+                .remove([video.thumbnail_url]);
+
+            if (thumbnailDeleteError) throw thumbnailDeleteError;
+        }
+
+        // Delete video record
+        const { error: deleteError } = await supabase
+            .from('videos')
+            .delete()
+            .eq('id', videoId);
+
+        if (deleteError) throw deleteError;
+
+        return { error: null };
+    } catch (error) {
+        console.error('Error deleting video:', error);
+        return { error };
+    }
+}
+
+async function incrementVideoViews(videoId) {
+    try {
+        const { data, error } = await supabase.rpc('increment_video_views', {
+            video_id: videoId
+        });
+
+        if (error) throw error;
+
+        return { data, error: null };
+    } catch (error) {
+        console.error('Error incrementing video views:', error);
+        return { data: null, error };
+    }
+}
+
+async function searchVideos(query, page = 1, limit = 12) {
+    try {
+        const start = (page - 1) * limit;
+        const end = start + limit - 1;
+
+        const { data, error, count } = await supabase
+            .from('videos')
+            .select('*, profiles(username)', { count: 'exact' })
+            .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
+            .order('created_at', { ascending: false })
+            .range(start, end);
+
+        if (error) throw error;
+
+        return { data, count, error: null };
+    } catch (error) {
+        console.error('Error searching videos:', error);
+        return { data: null, count: 0, error };
+    }
+}
+
 // Export functions
 window.supabaseClient = {
     register,
@@ -363,5 +613,11 @@ window.supabaseClient = {
     uploadFile,
     fetchFiles,
     getComments,
-    addComment
+    addComment,
+    uploadVideo,
+    getVideoById,
+    updateVideo,
+    deleteVideo,
+    incrementVideoViews,
+    searchVideos
 }; 

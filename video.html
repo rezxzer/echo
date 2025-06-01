@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video - Echo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="/">Echo</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/upload.html">Upload</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/monetization.html">Monetization</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <button class="btn btn-outline-primary me-2" onclick="window.location.href='/login.html'">Login</button>
+                    <button class="btn btn-primary" onclick="window.location.href='/signup.html'">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container py-5">
+        <div class="row">
+            <!-- Video Player -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="position-relative">
+                            <video id="videoPlayer" class="w-100" controls>
+                                Your browser does not support the video tag.
+                            </video>
+                            <div id="adContainer" class="position-absolute top-0 start-0 w-100 h-100"></div>
+                        </div>
+                        <div class="p-3">
+                            <h1 id="videoTitle" class="h4 mb-2">Loading...</h1>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="me-3">
+                                    <img id="channelAvatar" src="" alt="Channel Avatar" class="rounded-circle" style="width: 40px; height: 40px;">
+                                </div>
+                                <div>
+                                    <h6 id="channelName" class="mb-0">Loading...</h6>
+                                    <small id="videoDate" class="text-muted">Loading...</small>
+                                </div>
+                                <div class="ms-auto">
+                                    <button class="btn btn-outline-primary" id="subscribeBtn">
+                                        <i class="fas fa-bell me-2"></i>Subscribe
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="me-3">
+                                    <button class="btn btn-outline-secondary" id="likeBtn">
+                                        <i class="fas fa-thumbs-up me-2"></i><span id="likeCount">0</span>
+                                    </button>
+                                </div>
+                                <div class="me-3">
+                                    <button class="btn btn-outline-secondary" id="dislikeBtn">
+                                        <i class="fas fa-thumbs-down me-2"></i><span id="dislikeCount">0</span>
+                                    </button>
+                                </div>
+                                <div class="me-3">
+                                    <button class="btn btn-outline-secondary" id="shareBtn">
+                                        <i class="fas fa-share me-2"></i>Share
+                                    </button>
+                                </div>
+                                <div class="ms-auto">
+                                    <button class="btn btn-outline-secondary" id="saveBtn">
+                                        <i class="fas fa-bookmark me-2"></i>Save
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <h6 class="mb-0 me-2">Description</h6>
+                                        <button class="btn btn-link btn-sm p-0" id="showMoreBtn">Show more</button>
+                                    </div>
+                                    <p id="videoDescription" class="mb-0">Loading...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comments Section -->
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Comments</h5>
+                        <div class="mb-4">
+                            <div class="d-flex">
+                                <img id="userAvatar" src="" alt="User Avatar" class="rounded-circle me-3" style="width: 40px; height: 40px;">
+                                <div class="flex-grow-1">
+                                    <textarea class="form-control" id="commentInput" rows="2" placeholder="Add a comment..."></textarea>
+                                    <div class="d-flex justify-content-end mt-2">
+                                        <button class="btn btn-secondary me-2" id="cancelCommentBtn">Cancel</button>
+                                        <button class="btn btn-primary" id="submitCommentBtn">Comment</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="commentsList">
+                            <!-- Comments will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Related Videos -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Related Videos</h5>
+                        <div id="relatedVideos">
+                            <!-- Related videos will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="modal fade" id="shareModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Share Video</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Video Link</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="videoLink" readonly>
+                            <button class="btn btn-outline-secondary" type="button" id="copyLinkBtn">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center gap-3">
+                        <button class="btn btn-outline-primary" id="shareFacebookBtn">
+                            <i class="fab fa-facebook-f"></i>
+                        </button>
+                        <button class="btn btn-outline-info" id="shareTwitterBtn">
+                            <i class="fab fa-twitter"></i>
+                        </button>
+                        <button class="btn btn-outline-success" id="shareWhatsappBtn">
+                            <i class="fab fa-whatsapp"></i>
+                        </button>
+                        <button class="btn btn-outline-danger" id="shareRedditBtn">
+                            <i class="fab fa-reddit-alien"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/monetization.js"></script>
+    <script src="js/video-player.js"></script>
+</body>
+</html> 

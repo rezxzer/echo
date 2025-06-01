@@ -6,9 +6,16 @@ create table if not exists public.profiles (
     bio text,
     location text,
     website text,
+    social_links jsonb default '{}'::jsonb,
+    total_videos integer default 0,
+    total_views integer default 0,
+    total_likes integer default 0,
     created_at timestamp with time zone default timezone('utc'::text, now()) not null,
     updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+-- Create index for faster queries
+create index if not exists profiles_username_idx on profiles(username);
 
 -- Enable Row Level Security
 alter table public.profiles enable row level security;
@@ -20,10 +27,14 @@ create policy "Public profiles are viewable by everyone."
 
 create policy "Users can insert their own profile."
     on profiles for insert
-    with check ( auth.uid() = id or auth.role() = 'service_role' );
+    with check ( auth.uid() = id );
 
 create policy "Users can update their own profile."
     on profiles for update
+    using ( auth.uid() = id );
+
+create policy "Users can delete their own profile."
+    on profiles for delete
     using ( auth.uid() = id );
 
 -- Create storage bucket for avatars
@@ -34,9 +45,17 @@ create policy "Avatar images are publicly accessible."
     on storage.objects for select
     using ( bucket_id = 'avatars' );
 
-create policy "Anyone can upload an avatar."
+create policy "Users can upload their own avatar."
     on storage.objects for insert
-    with check ( bucket_id = 'avatars' );
+    with check ( bucket_id = 'avatars' AND auth.uid() = owner );
+
+create policy "Users can update their own avatar."
+    on storage.objects for update
+    using ( bucket_id = 'avatars' AND auth.uid() = owner );
+
+create policy "Users can delete their own avatar."
+    on storage.objects for delete
+    using ( bucket_id = 'avatars' AND auth.uid() = owner );
 
 -- Drop existing trigger and function if they exist
 drop trigger if exists on_auth_user_created on auth.users;
@@ -81,9 +100,17 @@ create table if not exists public.videos (
     description text,
     video_url text not null,
     thumbnail_url text,
+    duration integer, -- video duration in seconds
+    views integer default 0,
+    likes integer default 0,
+    status text default 'processing' check (status in ('processing', 'ready', 'error')),
     created_at timestamp with time zone default timezone('utc'::text, now()) not null,
     updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+-- Create index for faster queries
+create index if not exists videos_user_id_idx on videos(user_id);
+create index if not exists videos_created_at_idx on videos(created_at);
 
 -- Enable Row Level Security for videos
 alter table public.videos enable row level security;
@@ -115,4 +142,32 @@ create policy "Videos are publicly accessible."
 
 create policy "Users can upload their own videos."
     on storage.objects for insert
-    with check ( bucket_id = 'videos' ); 
+    with check ( bucket_id = 'videos' AND auth.uid() = owner );
+
+create policy "Users can update their own videos."
+    on storage.objects for update
+    using ( bucket_id = 'videos' AND auth.uid() = owner );
+
+create policy "Users can delete their own videos."
+    on storage.objects for delete
+    using ( bucket_id = 'videos' AND auth.uid() = owner );
+
+-- Create storage bucket for thumbnails
+insert into storage.buckets (id, name, public) values ('thumbnails', 'thumbnails', true);
+
+-- Create storage policy for thumbnails
+create policy "Thumbnails are publicly accessible."
+    on storage.objects for select
+    using ( bucket_id = 'thumbnails' );
+
+create policy "Users can upload their own thumbnails."
+    on storage.objects for insert
+    with check ( bucket_id = 'thumbnails' AND auth.uid() = owner );
+
+create policy "Users can update their own thumbnails."
+    on storage.objects for update
+    using ( bucket_id = 'thumbnails' AND auth.uid() = owner );
+
+create policy "Users can delete their own thumbnails."
+    on storage.objects for delete
+    using ( bucket_id = 'thumbnails' AND auth.uid() = owner ); 
